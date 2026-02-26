@@ -1,0 +1,101 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}       % UTF-8 encoding
+\usepackage[T1]{fontenc}          % Font encoding
+\usepackage{lmodern}              % Modern fonts
+\usepackage{geometry}             % Page margins
+\usepackage{graphicx}             % For images
+\usepackage{amsmath, amssymb}     % Math symbols
+\usepackage{hyperref}             % Hyperlinks
+\usepackage{caption}              % Captions for figures/tables
+\usepackage{cite}                 % Better citation handling
+\usepackage{setspace}             % Line spacing
+
+% Page geometry
+\geometry{margin=1in}
+
+% Line spacing
+\doublespacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{10pt}
+
+% Title info
+\title{Final Exam Paper }
+\author{Emma Feege}
+\date{\today}
+
+\begin{document}
+
+% Title page
+\maketitle
+
+% Abstract
+% \begin{abstract}
+% A brief summary of your report, highlighting objectives, methods, results, and conclusions.
+% \end{abstract}
+
+% Table of contents
+\tableofcontents
+\newpage
+
+% Sections
+\section{Introduction}
+Introduce the topic, motivation, and objectives of your study.
+
+\section{Architecture}
+
+\subsection{Choice of Architectural Style}
+
+The proposed system follows a layered, cloud-native, event-driven microservices architecture. The reason for this is that in the task it was stated that the business will initially be small and cost-constrained but expected to grow very rapidly. Medium-term, this makes scalability, robustness and the ability to independently deploy the required services highly important quality attributes of the system to be developed, which are core strengths of microservices. Microservice architectures also natively support the separate management and parallel development of the individual services, that can hence be developed with the best-suiting technologies and in a more agile way.
+
+A drawback of this decision in the specific case of the task would be that that microservices introduce a complexity overhead compared to more traditional, monolithic approaches. According to the Microsoft Learn information on microservice architectues, topics such as service discovery, data consistency, transaction management and interservice communication pose challenges during the development. Another aspect to be taken into account is the fact, that transforming to a completely different architecture style is also a big challenge the company. In fact, as Conway's law states, very often, the communication structure of a company is reflected in the design of the software that the company develops. If this holds true for the enterprise of the task, in the long run, a successful, lasting transition to cloud-native software systems might need more than a well-designed cloud-native architecture for the online business, like organizational and process changes.
+
+\subsection{Proposal for the Solution Architecture}
+
+The proposed system consists of a layered architure. The individual layers together with the software components they contain will be presented in detail in the following subsections.
+
+\subsubsection{User Interface Layer}
+
+The user interface layer acts as the outermost system layer and is responsible for the direct communication and interaction with the customers of the online business. It contains a content delivery networt (CDN) that caches and delivers static content for the catalog and ordering website and the blog, like HTML pages, CSS files, JavaScript code and images. The main reasons for including a CDN is the expected latency reduction, which is done by serving the customers from geographically closer locations, which is expected to increase the customer satisfaction. Also, CDNs offer security features like a reduction of the impact of DDos attacks through load distribution.
+
+The CDN will be integrated using Amazon CloudFront together with an S3 bucket for the static content. CloudFront offers the needed standard functionality like caching and has different flat-rate plans, that cap the usage costs and would allow a scale-up, as soon as the online business starts to grow. The S3 bucket acts as the origin location for the static content, from which CloudFront will retrieve it in case it is not cached.
+
+\subsubsection{API Layer}
+
+The communication to the system's backend will be via RESTful API calls, which go through the API layer of the system. It consists of an API Gateway, which i.a. controls the forwarding of requests to the responsible microservices and offers monitoring capabilities and access control. For this, the fully managed Amazon API Gateway is proposed, which has a tiered pricing model, so that over time, the price for individual request drops. Additionally, it comes with support for security features like a native OAuth2 support, which might come in handy in case users can create accounts and log into the blog (this was not specified in the task) and AWS Identity and Access Management (IAM).
+
+\subsubsection{Microservices Layer}
+
+The microservices layer contains the services required for the online business, namely the catalog and ordering service, a blog service, a payment service, a customer relationship service and an analytics service. Additionally, if the users are able to register for and engange in the blog, there would also be an authentication service.
+
+For the catalog and ordering service, the blog and the payment service, a serverless approach is used.Serverless services are fully managed, support event-driven communication, automatically scale as needed and cost only per invocation. This makes them well suited for an online business, whose workloads will be fluctuating, for example because of discount promotions and year-end business. The pay-per-use cost model and missing demand for maintenance also make it a cheap alternative to self-managed services.
+
+The catalog layer has an interface to a session database, where information like the current customers' shopping cart contents, the checkout progress and temporary preferences are stored. Additionally, there is a relational database for orders
+
+\subsubsection{Database Layer}
+
+The database layer contains multiple application-specific databases, such as a session/state database (e.g. for the shopping cart state) and an order database for the catalog website, a blog database for the blog (with tables for users and blog entries). The communication between the microservices will be event-driven.
+
+\subsubsection{Interface to the existing Fulfillment and Inventory System}
+
+For the existing fulfillment and inventory software system, which is hosted on-premise in the company's internal infrastructure, it is assumed that its main responsibilities are the tracking of products, management of stock levels, order processing, and coordination of shipment and fulfillment. According to the task description, the system follows a traditional three-tier architecture. As it was stated in the task that the company is a "traditional enterprise", it can be assumed that the core logic of the fulfillment and inventory system was not designed according to cloud-native principles, but might rather follow a monolithic design. As a result, migrating and modifying this software might involve a high development effort. For this reason, it is recommended not to migrate the system immediately, but instead to integrate it using an anti-corruption layer. This layer provides an interface between the new cloud-native services and the legacy system and prevents tight coupling between them.
+
+Once the online business grows, migration to the cloud can be considered using the Amazon 6R migration strategies. One option would be to rehost ("lift and shift") the software to the cloud by moving it either into a virtual machine or a container, without changing much. Another option would be to replatform ("lift, tinker and shift"), where components such as the database are migrated to managed cloud services while the application logic remains largely unchanged. In the long term, refactoring or rearchitecting the system into a cloud-native solution may provide the greatest scalability and maintainability benefits, but this would involve significantly higher development effort and cost.
+
+\section{Discussion of Security, Availability and Performance Aspects}
+Present your data and findings. Include figures and tables as needed.
+
+\section{Conclusion}
+Summarize key findings and potential future work.
+
+% References
+\begin{thebibliography}{9}
+\bibitem{example1}
+Author, \emph{Title}, Journal, Year.
+
+\bibitem{example2}
+Author, \emph{Title}, Publisher, Year.
+\end{thebibliography}
+
+\end{document}
